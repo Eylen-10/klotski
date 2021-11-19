@@ -17,16 +17,18 @@ var str = null;
 var btnDisable = ref(false)
 var isLoading = ref(false)
 async function play(){
+    console.log('play')
     btnDisable.value = true;
     let playIndex = curPage;
-    initPosition()
+    await initPosition()
     var stepList = []
     if(posObj.step && posObj.step != '[]'){
         stepList = (posObj.step).replace('[(','').replace(')]','').split('), (')
     }
     for(let i=0;i<stepList.length;i++){
         if(playIndex != curPage){
-            btnDisable.value = false;
+            console.log('returns')
+            stepCount.value = 0;
             return;
         }
         let temp = stepList[i].split(', ')
@@ -35,54 +37,73 @@ async function play(){
         let speed = '100px';
         if(action == '0'){//up
             // chess.style.top = (parseInt(chess.style.top) - 100) + 'px'
+            let target = (parseInt(chess.style.top) - 100)
+            console.log((parseInt(chess.style.top) - 100) + 'px')
             Velocity(chess,{
-                top : (parseInt(chess.style.top) - 100) + 'px'
+                top : target + 'px'
             },{
                 duration:300
             })
+            await sleep(400);
+            chess.style.top = target + 'px'
         }else if(action == '1'){//right
             // chess.style.left = (parseInt(chess.style.left) + 100) + 'px'
+            let target = (parseInt(chess.style.left) + 100)
+            console.log(target + 'px')
             Velocity(chess,{
-                left : (parseInt(chess.style.left) + 100) + 'px'
+                left : target + 'px'
             },{
                 duration:300
             })
+            await sleep(400);
+            chess.style.left = target + 'px'
         }else if(action == '2'){//down
-            // chess.style.top = (parseInt(chess.style.top) + 100) + 'px'
+            let target = (parseInt(chess.style.top) + 100)
+            console.log(target + 'px')
             Velocity(chess,{
-                top : (parseInt(chess.style.top) + 100) + 'px'
+                top : target + 'px'
             },{
                 duration:300
             })
+            await sleep(400);
+            chess.style.top = target + 'px'
         }else if(action == '3'){//left
-            // chess.style.left = (parseInt(chess.style.left) - 100) + 'px'
+            let target = (parseInt(chess.style.left) - 100)
+            console.log(target + 'px')
             Velocity(chess,{
-                left : (parseInt(chess.style.left) - 100) + 'px'
+                left : target + 'px'
             },{
-                duration:300
+                duration:300,
             })
+            await sleep(400);
+            chess.style.left = target + 'px'
         }
         // console.log(Velocity,22)
 
-        await sleep(300);
+        
         stepCount.value = i+1;
     }
-    btnDisable.value = false;
+    // btnDisable.value = false;
 
     ElMessage({
         message:"成功",
         type:"success"
     })
+    
+    
 }
 function sleep(time){
     return new Promise((resolve)=> setTimeout(resolve,time))
 }
 function handleCurrentChange(val){
-    stepCount.value = 0;
-    btnDisable.value = false;
-    curPage = val;
-    posObj = posList[val]
-    initPosition();
+    if(curPage != val){
+        stepCount.value = 0;
+        btnDisable.value = false;
+        curPage = val;
+        posObj = posList[val]
+        initPosition();
+    }
+    
 }
 function getPosition(){
     isLoading.value = true;
@@ -105,7 +126,7 @@ function getPosition(){
         isLoading.value = false;
     })
 }
-function initPosition(){
+async function initPosition(){
     let A1 = document.getElementsByClassName('A1')[0]
     let A2 = document.getElementsByClassName('A2')[0]
     let A3 = document.getElementsByClassName('A3')[0]
@@ -128,7 +149,8 @@ function initPosition(){
         'C' : C,
         'D' : D
     }
-    // console.log(222,pos)
+    await sleep(400);
+    console.log('posObj',posObj)
     for(let i=0;i<posObj.pos.length;i++){
         let x = (posObj.pos[i]%4)*100;
         let y= (Math.floor(posObj.pos[i]/4))*100;
