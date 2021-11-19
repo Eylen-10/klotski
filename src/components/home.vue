@@ -15,7 +15,7 @@ var stepCount = ref(0)
 var curPage = 1
 var str = null;
 var btnDisable = ref(false)
-console.log(stepCount)
+var isLoading = ref(false)
 async function play(){
     btnDisable.value = true;
     let playIndex = curPage;
@@ -24,7 +24,6 @@ async function play(){
     if(posObj.step && posObj.step != '[]'){
         stepList = (posObj.step).replace('[(','').replace(')]','').split('), (')
     }
-    console.log('play',stepList)
     for(let i=0;i<stepList.length;i++){
         if(playIndex != curPage){
             btnDisable.value = false;
@@ -45,7 +44,6 @@ async function play(){
         }
         await sleep(100);
         stepCount.value = i+1;
-        console.log(stepCount)
     }
     btnDisable.value = false;
 
@@ -58,12 +56,14 @@ function sleep(time){
     return new Promise((resolve)=> setTimeout(resolve,time))
 }
 function handleCurrentChange(val){
+    stepCount.value = 0;
     btnDisable.value = false;
     curPage = val;
     posObj = posList[val]
     initPosition();
 }
 function getPosition(){
+    isLoading.value = true;
     axios.get('steps.txt').then(res=>{
         if(res.status==200){
             let lines = res.data.split('\n')
@@ -74,14 +74,13 @@ function getPosition(){
                     step : temp[1],
                 })
             }
-            console.log(curPage,22)
             posObj = posList[curPage];
             totalNum.value = lines.length-1;
-            console.log(totalNum)
             initPosition();
         }
+        isLoading.value = false;
     }).catch(e=>{
-
+        isLoading.value = false;
     })
 }
 function initPosition(){
@@ -122,7 +121,7 @@ function initPosition(){
 //   console.log(newFile.type);
 </script>
 <template>
-    <div class="content">
+    <div class="content" v-loading="isLoading">
         <div class="header">
             <span>KLOTSKI</span>
         </div>
