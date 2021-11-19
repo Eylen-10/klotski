@@ -34,15 +34,37 @@ async function play(){
         let action = temp[1];
         let speed = '100px';
         if(action == '0'){//up
-            chess.style.top = (parseInt(chess.style.top) - 100) + 'px'
+            // chess.style.top = (parseInt(chess.style.top) - 100) + 'px'
+            Velocity(chess,{
+                top : (parseInt(chess.style.top) - 100) + 'px'
+            },{
+                duration:300
+            })
         }else if(action == '1'){//right
-            chess.style.left = (parseInt(chess.style.left) + 100) + 'px'
+            // chess.style.left = (parseInt(chess.style.left) + 100) + 'px'
+            Velocity(chess,{
+                left : (parseInt(chess.style.left) + 100) + 'px'
+            },{
+                duration:300
+            })
         }else if(action == '2'){//down
-            chess.style.top = (parseInt(chess.style.top) + 100) + 'px'
+            // chess.style.top = (parseInt(chess.style.top) + 100) + 'px'
+            Velocity(chess,{
+                top : (parseInt(chess.style.top) + 100) + 'px'
+            },{
+                duration:300
+            })
         }else if(action == '3'){//left
-            chess.style.left = (parseInt(chess.style.left) - 100) + 'px'
+            // chess.style.left = (parseInt(chess.style.left) - 100) + 'px'
+            Velocity(chess,{
+                left : (parseInt(chess.style.left) - 100) + 'px'
+            },{
+                duration:300
+            })
         }
-        await sleep(100);
+        // console.log(Velocity,22)
+
+        await sleep(300);
         stepCount.value = i+1;
     }
     btnDisable.value = false;
@@ -126,26 +148,26 @@ function initPosition(){
             <span>KLOTSKI</span>
         </div>
         <div class="main">
-            <div class="item A A1"></div>
-            <div class="item A A2"></div>
-            <div class="item A A3"></div>
-            <div class="item A A4"></div>
-            <div class="item B B1"></div>
-            <div class="item B B2"></div>
-            <div class="item B B3"></div>
-            <div class="item B B4"></div>
-            <div class="item C"></div>
-            <div class="item D"></div>
+            <div class="item A A1">A1</div>
+            <div class="item A A2">A2</div>
+            <div class="item A A3">A3</div>
+            <div class="item A A4">A4</div>
+            <div class="item B B1">B1</div>
+            <div class="item B B2">B2</div>
+            <div class="item B B3">B3</div>
+            <div class="item B B4">B4</div>
+            <div class="item C">C</div>
+            <div class="item D">D</div>
         </div>
         <div class="pagination">
             <div class="f1">
                 <el-button size="mini" type="primary" :disabled="btnDisable" class="play" @click="play">play</el-button>
-                <div class="count">步骤总计：{{stepCount}}</div>
+                <div class="count">COUNT：{{stepCount}}</div>
             </div> 
             <el-pagination
                 class="pag"
                 background
-                layout="prev, pager, next"
+                layout="prev, pager, next, jumper, ->, total"
                 :page-size="1"
                 @current-change="handleCurrentChange"
                 :total="totalNum">
@@ -198,6 +220,11 @@ function initPosition(){
 .item{
     position:absolute;
     border:1px solid white;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    display:border-box;
 }
 .A{
     width:100px;
