@@ -296,7 +296,8 @@ function initPosition(){
     line-height:30px;
     height:30px;
 }
-.play{
+.el-button{
+    margin-top:10px !important;
 }
 .item{
     position:absolute;
