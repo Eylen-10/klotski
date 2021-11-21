@@ -12,6 +12,7 @@ let CHESS_LIST = ['A1','A2','A3','A4','B1','B2','B3','B4','C','D']
 var posList = []
 var totalNum = ref(0)
 var stepCount = ref(0)
+var stepTime = ref(0)
 var curPage = 1
 var str = null;
 var btnDisable = ref(false)
@@ -71,6 +72,7 @@ function animate(element,direction,target){
         },10);
     }
 async function play(){
+    var t1 = new Date().getTime()
     btnDisable.value = true;
     let playIndex = curPage;
     initPosition()
@@ -79,7 +81,9 @@ async function play(){
         stepList = (posObj.step).replace('[(','').replace(')]','').split('), (')
     }
     var chess;
-    console.log('play',stepList.length)
+    var t2 = new Date().getTime()
+    console.log('play',stepList.length,t2-t1)
+    stepTime.value = t2-t1
     for(let i=0;i<stepList.length;i++){
         if(playIndex != curPage){
             console.log('returns')
@@ -88,6 +92,7 @@ async function play(){
         }
         let temp = stepList[i].split(', ')
         chess = MAP[CHESS_LIST[temp[0]]];
+        // console.log(chess.top,chess.left)
         chess.value.style.top = chess.top + 'px'
         chess.value.style.left = chess.left + 'px'
         let action = temp[1];
@@ -238,7 +243,7 @@ function initPosition(){
             <div class="f1">
                 <el-button size="mini" type="primary" :disabled="btnDisable" class="play" @click="play">play</el-button>
             </div> 
-            <div class="count">TIME:0 &nbsp;&nbsp;&nbsp;COUNT：{{stepCount}}</div>
+            <div class="count"><span v-show="btnDisable">TIME:{{ stepTime }}ms &nbsp;&nbsp;&nbsp;COUNT：{{ stepCount }}</span></div>
             <el-pagination
                 class="pag"
                 background
@@ -289,6 +294,7 @@ function initPosition(){
 .count{
     font-size:12px;
     line-height:30px;
+    height:30px;
 }
 .play{
 }
