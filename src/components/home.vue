@@ -247,8 +247,8 @@ function initPosition(){
             <el-pagination
                 class="pag"
                 background
-                :pager-count="4"
-                layout="prev, pager, next, jumper"
+                :pager-count="6"
+                layout="prev, pager, next"
                 :page-size="1"
                 @current-change="handleCurrentChange"
                 :total="totalNum">
