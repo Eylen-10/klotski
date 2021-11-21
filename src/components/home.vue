@@ -249,7 +249,7 @@ function initPosition(){
                 class="pag"
                 background
                 :pager-count="4"
-                layout="prev, pager, next, jumper, ->, total"
+                layout="prev, pager, next, jumper"
                 :page-size="1"
                 @current-change="handleCurrentChange"
                 :total="totalNum">
@@ -284,6 +284,7 @@ function initPosition(){
     
 }
 .pag{
+    
 }
 .f1{
     display:flex;
