@@ -243,7 +243,7 @@ function initPosition(){
             <div class="f1">
                 <el-button size="mini" type="primary" :disabled="btnDisable" class="play" @click="play">play</el-button>
             </div> 
-            <div class="count"><span v-show="btnDisable">TIME:{{ stepTime }}ms &nbsp;&nbsp;&nbsp;COUNT：{{ stepCount }}</span></div>
+            <div class="count"><span v-show="btnDisable">TIME:&nbsp;&nbsp;{{ stepTime }}ms &nbsp;&nbsp;&nbsp;COUNT:&nbsp;&nbsp;{{ stepCount }}</span></div>
             <el-pagination
                 class="pag"
                 background
