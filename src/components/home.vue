@@ -71,7 +71,6 @@ function animate(element,direction,target){
         },10);
     }
 async function play(){
-    console.log('play')
     btnDisable.value = true;
     let playIndex = curPage;
     initPosition()
@@ -80,16 +79,15 @@ async function play(){
         stepList = (posObj.step).replace('[(','').replace(')]','').split('), (')
     }
     var chess;
+    console.log('play',stepList.length)
     for(let i=0;i<stepList.length;i++){
         if(playIndex != curPage){
             console.log('returns')
             stepCount.value = 0;
-            Velocity(chess,"finish")
             return;
         }
         let temp = stepList[i].split(', ')
         chess = MAP[CHESS_LIST[temp[0]]];
-        console.log(chess.top,chess.left)
         chess.value.style.top = chess.top + 'px'
         chess.value.style.left = chess.left + 'px'
         let action = temp[1];
@@ -106,7 +104,6 @@ async function play(){
             // })
             await sleep(300);
             chess.top = target
-            console.log(chess)
 
         }else if(action == '1'){//right
             // chess.style.left = (parseInt(chess.style.left) + 100) + 'px'
@@ -122,7 +119,6 @@ async function play(){
             // })
             await sleep(300);
             chess.left = target
-            console.log(chess)
 
         }else if(action == '2'){//down
             // chess.style.top  = parseInt(chess.style.top) + 'px'
@@ -136,7 +132,6 @@ async function play(){
             // })
             await sleep(300);
             chess.top = target
-            console.log(chess)
         }else if(action == '3'){//left
             // chess.style.left  = parseInt(chess.style.left) + 'px'
             let target = (chess.left - 100)
@@ -150,7 +145,6 @@ async function play(){
             await sleep(300);
             // chess.style.left = target + 'px'
             chess.left = target
-            console.log(chess)
         }
         // console.log(Velocity,22)
 
