@@ -243,11 +243,12 @@ function initPosition(){
         <div class="pagination">
             <div class="f1">
                 <el-button size="mini" type="primary" :disabled="btnDisable" class="play" @click="play">play</el-button>
-                <div class="count">TIME:0 COUNT：{{stepCount}}</div>
             </div> 
+            <div class="count">TIME:0 &nbsp;&nbsp;&nbsp;COUNT：{{stepCount}}</div>
             <el-pagination
                 class="pag"
                 background
+                :pager-count="4"
                 layout="prev, pager, next, jumper, ->, total"
                 :page-size="1"
                 @current-change="handleCurrentChange"
@@ -283,7 +284,6 @@ function initPosition(){
     
 }
 .pag{
-    margin:10px;
 }
 .f1{
     display:flex;
@@ -293,8 +293,7 @@ function initPosition(){
 }
 .count{
     font-size:12px;
-    display:inline-box;
-    width:200px;
+    line-height:30px;
 }
 .play{
 }
