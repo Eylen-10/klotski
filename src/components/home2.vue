@@ -44,7 +44,7 @@ function getPosition(){
     isLoading.value = true;
     axios.get('steps.txt').then(res=>{
         if(res.status==200){
-            let lines = res.data.split('\r\n')
+            let lines = res.data.split('\n')
             for(let i=0;i<lines.length;i++){
                 let temp = lines[i].split(':')
                 posList.push({

@@ -122,7 +122,7 @@ async function threeStart(){
           if(intersect){
               if(!isRotating&&startPoint){//魔方没有进行转动且满足进行转动的条件
                   movePoint = intersect.point;
-                  console.log('move',movePoint,startPoint)
+                //   console.log('move',movePoint,startPoint)
                   if(!movePoint.equals(startPoint)){//和起始点不一样则意味着可以得到转动向量了
                       isRotating = true;//转动标识置为true
                       var sub = movePoint.sub(startPoint);//计算转动向量
@@ -497,7 +497,7 @@ function initThree(){
     // console.log(document.getElementsByClassName("main").offsetWidth,document.getElementsByClassName("main").offsetHeight)
   width = document.getElementsByClassName("main")[0].offsetWidth;
   height = document.getElementsByClassName("main")[0].offsetHeight-60;
-  console.log('wh',width,height)
+//   console.log('wh',width,height)
   renderer = new THREE.WebGLRenderer({
     alpha: true, // canvas是否包含alpha (透明度) 默认为 false
     antialias: true,
@@ -506,14 +506,14 @@ function initThree(){
   renderer.setSize(width,height)
   // renderer.setClearColor('#ffffff',0);
   renderer.setClearAlpha(0.0)
-  console.log(document.getElementById('canvas-frame'))
+//   console.log(document.getElementById('canvas-frame'))
   document.getElementById('canvas-frame').appendChild(renderer.domElement);
 }
 var camera; // 设置正方向和中心点
 var controller;//视角控制器
 function initCamera(){
   camera = new THREE.PerspectiveCamera(50,width/height,0.1,1000);
-  console.log(width/height)
+//   console.log(width/height)
   // camera.position.set(230,170,130);
   // camera.position.set(0,-170,130);
   camera.position.set(290,200,250);
