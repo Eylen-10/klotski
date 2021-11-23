@@ -1,31 +1,38 @@
 <template>
  <div  id="canvas-frame"></div>
+ <div class="f1" v-if="curPos">
+    <el-button size="mini" type="primary" :disabled="btnDisable" class="play" @click="play">play</el-button>
+</div> 
+ <div class="count"><span v-show="btnDisable">TIME:&nbsp;&nbsp;{{ stepTime }}ms &nbsp;&nbsp;&nbsp;COUNT:&nbsp;&nbsp;{{ stepCount }}</span></div>
+
 </template>
 
 <script setup>
 import * as THREE from 'three'
 import * as dat from 'dat.gui'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { ref,onMounted } from "vue";
+import { ref,onMounted,defineExpose,reactive } from "vue";
 import { OBJLoader } from "three-obj-mtl-loader";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
+import { ElMessage } from 'element-plus'
+
+
 
 onMounted(() => {
-  // 初始化
-  threeStart()
+//   threeStart()
 })
 window.requestAnimFrame = (function(){
-                return  window.requestAnimationFrame       ||
-                    window.webkitRequestAnimationFrame ||
-                    window.mozRequestAnimationFrame    ||
-                    function( callback ){
-                        window.setTimeout(callback, 6000 / 600);
-                    };
-            })();
+    return  window.requestAnimationFrame       ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame    ||
+        function( callback ){
+            window.setTimeout(callback, 6000 / 60);
+        };
+})();
 const gui = new dat.GUI();
 var composer;
 var outlinePass;
@@ -42,9 +49,28 @@ var isRotating = false;//是否正在转动
 var intersect;//碰撞光线穿过的元素
 var normalize;//触发平面法向量
 var movePoint;
-// var gy; // 关羽
-var zf,cc,mc,hz,zy,gy,b1,b2,b3,b4;
+var curPos = ref(null);
+// var D; // 关羽
+var A1,C,A2,A3,A4,D,B1,B2,B3,B4;
+var MAP = reactive({
+        'A1' : A1,
+        'A2' : A2,
+        'A3' : A3,
+        'A4' : A4,
+        'B1' : B1,
+        'B2' : B2,
+        'B3' : B3,
+        'B4' : B4,
+        'C' : C,
+        'D' : D
+})
 
+
+var btnDisable = ref(false)
+var stepTime = ref(0)
+var stepCount = ref(0)
+
+let CHESS_LIST = ['A1','A2','A3','A4','B1','B2','B3','B4','C','D']
 //转动的六个方向
 var xLine = new THREE.Vector3( 1, 0, 0 );//X轴正方向
 var xLineAd = new THREE.Vector3( -1, 0, 0 );//X轴负方向
@@ -55,12 +81,12 @@ var zLineAd = new THREE.Vector3( 0, 0, -1 );//Z轴负方向
 
 var raycaster = new THREE.Raycaster();//光线碰撞检测器
 var initStatus = [];//魔方初始状态
-function threeStart(){
+async function threeStart(){
   initThree();
   initCamera();
   initScene();
   initLight();
-  initObject();
+  await initObject();
   render();
   //监听鼠标事件
   renderer.domElement.addEventListener('mousedown', startCube, false);
@@ -434,7 +460,7 @@ function threeStart(){
         }
         function checkIntersection() {
             raycaster.setFromCamera( mouse, camera );
-            // outlinePass.selectedObjects = [gy];
+            // outlinePass.selectedObjects = [D];
             // var intersects = raycaster.intersectObjects( [ scene ], true );
             // console.log('intersects',intersects)
             // if ( intersects.length > 0 ) {
@@ -451,26 +477,26 @@ function keyEvent(e){
   console.log(e.keyCode);
   let speed = 55;
   if(e.keyCode == '40'){//left
-    gy.rotation.z = Math.PI
-    gy.position.x -= speed;
+    D.rotation.z = Math.PI
+    D.position.x -= speed;
   }
   if(e.keyCode == '38'){//left
-    gy.rotation.z = 0
-    gy.position.x += speed;
+    D.rotation.z = 0
+    D.position.x += speed;
   }
   if(e.keyCode == '37'){//left
-    gy.rotation.z = -Math.PI/2
-    gy.position.y -= speed;
+    D.rotation.z = -Math.PI/2
+    D.position.y -= speed;
   }
   if(e.keyCode == '39'){//left
-    gy.rotation.z = Math.PI/2
-    gy.position.y += speed;
+    D.rotation.z = Math.PI/2
+    D.position.y += speed;
   }
 }
 function initThree(){
     // console.log(document.getElementsByClassName("main").offsetWidth,document.getElementsByClassName("main").offsetHeight)
   width = document.getElementsByClassName("main")[0].offsetWidth;
-  height = document.getElementsByClassName("main")[0].offsetHeight;
+  height = document.getElementsByClassName("main")[0].offsetHeight-60;
   console.log('wh',width,height)
   renderer = new THREE.WebGLRenderer({
     alpha: true, // canvas是否包含alpha (透明度) 默认为 false
@@ -510,7 +536,7 @@ function initLight(){
   scene.add(light);
   // add spotlight for the shadows
   // var spotLight = new THREE.SpotLight(0x475353);
-  var spotLight = new THREE.SpotLight(0xfefefe);
+  var spotLight = new THREE.SpotLight(0xffffff);
   spotLight.position.set(200, 150, -500);
   spotLight.castShadow = true;
   // gui.add(spotLight.position,'x')
@@ -519,42 +545,48 @@ function initLight(){
   scene.add(spotLight);
 }
 var cubes;
-function initObject(){
+async function loadA1(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+        loader.load('A.obj', 
+        // 资源加载成功后执行的函数 
+        //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
+        function ( object ) {
+        //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
+                        //该示例中的object为一个group，有多个mesh组成
+            object.traverse( function ( child ) {
+            if ( child instanceof THREE.Mesh ) {
+                    // child.material.map = texture;
+                    child.material =objMaterial;
+            }
+            } );
+            object.castShadow = true;
+            object.receiveShadow = true;
+            object.scale.set(0.007,0.007,0.007);
 
-//obj文件加载loader
-  var loader = new OBJLoader();
-  var objMaterial =  new THREE.MeshLambertMaterial({color: 0xDC552C});;
-    //导入资源
-    loader.load('GY.obj', 
-    // 资源加载成功后执行的函数 
-    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
-    function ( object ) {
-    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
-                    //该示例中的object为一个group，有多个mesh组成
-        object.traverse( function ( child ) {
-          if ( child instanceof THREE.Mesh ) {
-                  // child.material.map = texture;
-                  child.material =objMaterial;
-          }
-        } );
-        object.castShadow = true;
-        object.receiveShadow = true;
-        object.scale.set(0.7,0.7,0.7);
-
-        var geometry = new THREE.BoxGeometry(50,105,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
-        var mesh = new THREE.Mesh( geometry, material );
-        mesh.receiveShadow = true;
-        gy = new THREE.Group();
-        gy.add(object)
-        gy.add(mesh)
-        gy.position.x = -110 + 55 + 55;
-        gy.position.y = -110+82.5;
-        gy.position.z = 0;
-        scene.add( gy );
-      });
-
-      loader.load('ZF.obj', 
+            var geometry = new THREE.BoxGeometry(105,50,2);
+            var material = new THREE.MeshLambertMaterial({color: 0x07689F});
+            var mesh = new THREE.Mesh( geometry, material );
+            mesh.receiveShadow = true;
+            A1 = new THREE.Group();
+            A1.add(object)
+            A1.add(mesh)
+            A1.position.x = -82.5;
+            A1.position.y = -110;
+            A1.position.z = 0;
+            A1.width = 50
+            A1.height = 105
+            resolve()
+        });
+    
+    })
+}
+async function loadA2(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+        loader.load('A.obj', 
     // 资源加载成功后执行的函数 
     //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
     function ( object ) {
@@ -571,19 +603,28 @@ function initObject(){
         object.scale.set(0.007,0.007,0.007);
 
         var geometry = new THREE.BoxGeometry(105,50,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
+        var material = new THREE.MeshLambertMaterial({color: 0x07689F});
         var mesh = new THREE.Mesh( geometry, material );
         mesh.receiveShadow = true;
-        zf = new THREE.Group();
-        zf.add(object)
-        zf.add(mesh)
-        zf.position.x = -82.5;
-        zf.position.y = -110;
-        zf.position.z = 0;
-        scene.add( zf );
+        A2 = new THREE.Group();
+        A2.add(object)
+        A2.add(mesh)
+        A2.position.x = -82.5 ;
+        A2.position.y = -110  + 55 + 55 + 55;
+        A2.position.z = 0;
+        A2.width = 50
+        A2.height = 105
+        resolve()
       });
 
-       loader.load('ZF.obj', 
+    })
+}
+
+async function loadA3(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+       loader.load('A.obj', 
     // 资源加载成功后执行的函数 
     //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
     function ( object ) {
@@ -601,19 +642,215 @@ function initObject(){
         // object.postion.z = 1;
 
         var geometry = new THREE.BoxGeometry(105,50,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
+        var material = new THREE.MeshLambertMaterial({color: 0x07689F});
         var mesh = new THREE.Mesh( geometry, material );
         mesh.receiveShadow = true;
-        hz = new THREE.Group();
-        hz.add(object)
-        hz.add(mesh)
-        hz.position.x = -82.5 + 110 ;
-        hz.position.y = -110;
-        hz.position.z = 0 ;
-        scene.add( hz );
+        A3 = new THREE.Group();
+        A3.add(object)
+        A3.add(mesh)
+        A3.position.x = -82.5 + 110 ;
+        A3.position.y = -110;
+        A3.position.z = 0 ;
+        A3.width = 50;
+        A3.height = 105;
+        resolve()
       });
 
-        loader.load('B.obj', 
+    })
+}
+async function loadA4(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+        loader.load('A.obj', 
+    // 资源加载成功后执行的函数 
+    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
+    function ( object ) {
+    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
+                    //该示例中的object为一个group，有多个mesh组成
+        object.traverse( function ( child ) {
+          if ( child instanceof THREE.Mesh ) {
+                  // child.material.map = texture;
+                  child.material =objMaterial;
+          }
+        } );
+        object.castShadow = true;
+        object.receiveShadow = true;
+        object.scale.set(0.007,0.007,0.007);
+
+        var geometry = new THREE.BoxGeometry(105,50,2);
+        var material = new THREE.MeshLambertMaterial({color: 0x07689F});
+        var mesh = new THREE.Mesh( geometry, material );
+        mesh.receiveShadow = true;
+        A4 = new THREE.Group();
+        A4.add(object)
+        A4.add(mesh)
+        A4.position.x = -82.5 + 110;
+        A4.position.y = -110  + 55 + 55 + 55;
+        A4.position.z = 0;
+        A4.width = 50;
+        A4.height = 105;
+        resolve()
+      });
+
+    })
+}
+
+async function loadB1(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+        loader.load('C.obj', 
+    // 资源加载成功后执行的函数 
+    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
+    function ( object ) {
+    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
+                    //该示例中的object为一个group，有多个mesh组成
+        object.traverse( function ( child ) {
+          if ( child instanceof THREE.Mesh ) {
+                  // child.material.map = texture;
+                  child.material =objMaterial;
+          }
+        } );
+        object.castShadow = true;
+        object.receiveShadow = true;
+        object.scale.set(0.005,0.005,0.005);
+
+        var geometry = new THREE.BoxGeometry(50,50,2);
+        var material = new THREE.MeshLambertMaterial({color: 0x07689F});
+        var mesh = new THREE.Mesh( geometry, material );
+        mesh.receiveShadow = true;
+        B1 = new THREE.Group();
+        B1.add(object)
+        B1.add(mesh)
+        B1.position.x = -82.5 + 110 +82.5;
+        B1.position.y = -110  + 55 + 55 + 55 ;
+        B1.position.z = 0;
+        B1.width = 50;
+        B1.height = 50;
+        resolve();
+      });
+
+    })
+}
+async function loadB2(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+         loader.load('C.obj', 
+    // 资源加载成功后执行的函数 
+    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
+    function ( object ) {
+    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
+                    //该示例中的object为一个group，有多个mesh组成
+        object.traverse( function ( child ) {
+          if ( child instanceof THREE.Mesh ) {
+                  // child.material.map = texture;
+                  child.material =objMaterial;
+          }
+        } );
+        object.castShadow = true;
+        object.receiveShadow = true;
+        object.scale.set(0.005,0.005,0.005);
+
+        var geometry = new THREE.BoxGeometry(50,50,2);
+        var material = new THREE.MeshLambertMaterial({color: 0x07689F});
+        var mesh = new THREE.Mesh( geometry, material );
+        mesh.receiveShadow = true;
+        B2 = new THREE.Group();
+        B2.add(object)
+        B2.add(mesh)
+        B2.position.x = -82.5 +82.5 + 55;
+        B2.position.y = -110  + 55 + 55  ;
+        B2.position.z = 0;
+        B2.width = 50;
+        B2.height = 50;
+        resolve();
+      });
+
+    })
+}
+async function loadB3(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+          loader.load('C.obj', 
+    // 资源加载成功后执行的函数 
+    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
+    function ( object ) {
+    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
+                    //该示例中的object为一个group，有多个mesh组成
+        object.traverse( function ( child ) {
+          if ( child instanceof THREE.Mesh ) {
+                  // child.material.map = texture;
+                  child.material =objMaterial;
+          }
+        } );
+        object.castShadow = true;
+        object.receiveShadow = true;
+        object.scale.set(0.005,0.005,0.005);
+
+        var geometry = new THREE.BoxGeometry(50,50,2);
+        var material = new THREE.MeshLambertMaterial({color: 0x07689F});
+        var mesh = new THREE.Mesh( geometry, material );
+        mesh.receiveShadow = true;
+        B3 = new THREE.Group();
+        B3.add(object)
+        B3.add(mesh)
+        B3.position.x = -82.5 +82.5 + 55;
+        B3.position.y = -110  + 55  ;
+        B3.position.z = 0;
+        B3.width = 50;
+        B3.height = 50;
+        resolve();
+      });
+
+    })
+}
+
+async function loadB4(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+         loader.load('C.obj', 
+    // 资源加载成功后执行的函数 
+    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
+    function ( object ) {
+    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
+                    //该示例中的object为一个group，有多个mesh组成
+        object.traverse( function ( child ) {
+          if ( child instanceof THREE.Mesh ) {
+                  // child.material.map = texture;
+                  child.material =objMaterial;
+          }
+        } );
+        object.castShadow = true;
+        object.receiveShadow = true;
+        object.scale.set(0.005,0.005,0.005);
+
+        var geometry = new THREE.BoxGeometry(50,50,2);
+        var material = new THREE.MeshLambertMaterial({color: 0x07689F});
+        var mesh = new THREE.Mesh( geometry, material );
+        mesh.receiveShadow = true;
+        B4 = new THREE.Group();
+        B4.add(object)
+        B4.add(mesh)
+        B4.position.x = -82.5 +82.5 + 55 + 55;
+        B4.position.y = -110 ;
+        B4.position.z = 0;
+        B4.width = 50;
+        B4.height = 50;
+        resolve()
+      });
+
+    })
+}
+
+async function loadD(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+        loader.load('C.obj', 
       // 资源加载成功后执行的函数 
       //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
       function ( object ) {
@@ -630,20 +867,29 @@ function initObject(){
           object.scale.set(0.01,0.01,0.01);
 
           var geometry = new THREE.BoxGeometry(105,105,2);
-          var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
+          var material = new THREE.MeshLambertMaterial({color: 0x07689F});
           var mesh = new THREE.Mesh( geometry, material );
           mesh.receiveShadow = true;
-          cc = new THREE.Group();
-          cc.add(object)
-          cc.add(mesh)
-          cc.position.x = -82.5 ;
-          cc.position.y = -110 +82.5;
-          cc.position.z = 0;
-          scene.add( cc );
+          D = new THREE.Group();
+          D.add(object)
+          D.add(mesh)
+          D.position.x = -82.5 ;
+          D.position.y = -110 +82.5;
+          D.position.z = 0;
+          D.width = 105;
+          D.height = 105;
+          resolve()
         });
 
+    })
+}
 
-      loader.load('ZF.obj', 
+async function loadC(){
+    let loader = new OBJLoader();
+    var objMaterial =  new THREE.MeshLambertMaterial({color: 0x07689F});
+    return await new Promise((resolve,reject)=>{
+          //导入资源
+  loader.load('D.obj', 
     // 资源加载成功后执行的函数 
     //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
     function ( object ) {
@@ -657,179 +903,34 @@ function initObject(){
         } );
         object.castShadow = true;
         object.receiveShadow = true;
-        object.scale.set(0.007,0.007,0.007);
+        object.scale.set(0.7,0.7,0.7);
 
-        var geometry = new THREE.BoxGeometry(105,50,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
+        var geometry = new THREE.BoxGeometry(50,105,2);
+        var material = new THREE.MeshLambertMaterial({color: 0x07689F});
         var mesh = new THREE.Mesh( geometry, material );
         mesh.receiveShadow = true;
-        mc = new THREE.Group();
-        mc.add(object)
-        mc.add(mesh)
-        mc.position.x = -82.5 ;
-        mc.position.y = -110  + 55 + 55 + 55;
-        mc.position.z = 0;
-        scene.add( mc );
+        C = new THREE.Group();
+        C.add(object)
+        C.add(mesh)
+        C.position.x = -110 + 55 + 55;
+        C.position.y = -110+82.5;
+        C.position.z = 0;
+        C.width = 105;
+        C.height = 50;
+        resolve()
       });
 
-       loader.load('ZF.obj', 
-    // 资源加载成功后执行的函数 
-    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
-    function ( object ) {
-    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
-                    //该示例中的object为一个group，有多个mesh组成
-        object.traverse( function ( child ) {
-          if ( child instanceof THREE.Mesh ) {
-                  // child.material.map = texture;
-                  child.material =objMaterial;
-          }
-        } );
-        object.castShadow = true;
-        object.receiveShadow = true;
-        object.scale.set(0.007,0.007,0.007);
+    })
+}
 
-        var geometry = new THREE.BoxGeometry(105,50,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
-        var mesh = new THREE.Mesh( geometry, material );
-        mesh.receiveShadow = true;
-        zy = new THREE.Group();
-        zy.add(object)
-        zy.add(mesh)
-        zy.position.x = -82.5 + 110;
-        zy.position.y = -110  + 55 + 55 + 55;
-        zy.position.z = 0;
-        scene.add( zy );
-      });
 
-      loader.load('B.obj', 
-    // 资源加载成功后执行的函数 
-    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
-    function ( object ) {
-    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
-                    //该示例中的object为一个group，有多个mesh组成
-        object.traverse( function ( child ) {
-          if ( child instanceof THREE.Mesh ) {
-                  // child.material.map = texture;
-                  child.material =objMaterial;
-          }
-        } );
-        object.castShadow = true;
-        object.receiveShadow = true;
-        object.scale.set(0.005,0.005,0.005);
 
-        var geometry = new THREE.BoxGeometry(50,50,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
-        var mesh = new THREE.Mesh( geometry, material );
-        mesh.receiveShadow = true;
-        b1 = new THREE.Group();
-        b1.add(object)
-        b1.add(mesh)
-        b1.position.x = -82.5 + 110 +82.5;
-        b1.position.y = -110  + 55 + 55 + 55 ;
-        b1.position.z = 0;
-        scene.add( b1 );
-      });
-      loader.load('B.obj', 
-    // 资源加载成功后执行的函数 
-    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
-    function ( object ) {
-    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
-                    //该示例中的object为一个group，有多个mesh组成
-        object.traverse( function ( child ) {
-          if ( child instanceof THREE.Mesh ) {
-                  // child.material.map = texture;
-                  child.material =objMaterial;
-          }
-        } );
-        object.castShadow = true;
-        object.receiveShadow = true;
-        object.scale.set(0.005,0.005,0.005);
-
-        var geometry = new THREE.BoxGeometry(50,50,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
-        var mesh = new THREE.Mesh( geometry, material );
-        mesh.receiveShadow = true;
-        b2 = new THREE.Group();
-        b2.add(object)
-        b2.add(mesh)
-        b2.position.x = -82.5 +82.5 + 55;
-        b2.position.y = -110  + 55 + 55  ;
-        b2.position.z = 0;
-        scene.add( b2 );
-      });
-
-      loader.load('B.obj', 
-    // 资源加载成功后执行的函数 
-    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
-    function ( object ) {
-    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
-                    //该示例中的object为一个group，有多个mesh组成
-        object.traverse( function ( child ) {
-          if ( child instanceof THREE.Mesh ) {
-                  // child.material.map = texture;
-                  child.material =objMaterial;
-          }
-        } );
-        object.castShadow = true;
-        object.receiveShadow = true;
-        object.scale.set(0.005,0.005,0.005);
-
-        var geometry = new THREE.BoxGeometry(50,50,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
-        var mesh = new THREE.Mesh( geometry, material );
-        mesh.receiveShadow = true;
-        b3 = new THREE.Group();
-        b3.add(object)
-        b3.add(mesh)
-        b3.position.x = -82.5 +82.5 + 55;
-        b3.position.y = -110  + 55  ;
-        b3.position.z = 0;
-        scene.add( b3 );
-      });
-
-      
-      loader.load('B.obj', 
-    // 资源加载成功后执行的函数 
-    //@params object 传入的模型，只能是单个模型，也可能是一个group,视构建的model而定 
-    function ( object ) {
-    //taverse函数为遍历object的每个子mesh，传入的child为每个mesh
-                    //该示例中的object为一个group，有多个mesh组成
-        object.traverse( function ( child ) {
-          if ( child instanceof THREE.Mesh ) {
-                  // child.material.map = texture;
-                  child.material =objMaterial;
-          }
-        } );
-        object.castShadow = true;
-        object.receiveShadow = true;
-        object.scale.set(0.005,0.005,0.005);
-
-        var geometry = new THREE.BoxGeometry(50,50,2);
-        var material = new THREE.MeshLambertMaterial({color: 0xE08F62});
-        var mesh = new THREE.Mesh( geometry, material );
-        mesh.receiveShadow = true;
-        b4 = new THREE.Group();
-        b4.add(object)
-        b4.add(mesh)
-        b4.position.x = -82.5 +82.5 + 55 + 55;
-        b4.position.y = -110 ;
-        b4.position.z = 0;
-        scene.add( b4 );
-      });
-     
-
-      
-      
-      
-      
-      
-      var geometry2 = new THREE.BoxGeometry(50,50,1);
+async function initObject(){
+    var geometry2 = new THREE.BoxGeometry(50,50,1);
       for ( var i = 0; i < 5; i ++ ) {
         for(var j = 0;j<4;j++){
           var material = new THREE.MeshLambertMaterial({color: 0xffffff,opacity: 1});
-          // material.color.setHSL( Math.random(), 1.0, 0.3 );
           var mesh = new THREE.Mesh( geometry2, material );
-          // mesh.castShadow = true;
           mesh.receiveShadow = true;
           mesh.position.x = i*55 - 110;
           mesh.position.y = j*55 - 110;
@@ -837,54 +938,195 @@ function initObject(){
           scene.add( mesh );
         }
     }
-
-
-  //泛光器
-  // composer = new EffectComposer( renderer );
-
-  // var renderPass = new RenderPass( scene, camera );
-  // composer.addPass( renderPass );
-
-  // outlinePass = new OutlinePass( new THREE.Vector2( window.innerWidth, window.innerHeight ), scene, camera );
-  // composer.addPass( outlinePass );
-
-
-  // var onLoad = function ( texture ) {
-
-  //     outlinePass.patternTexture = texture;
-  //     texture.wrapS = THREE.RepeatWrapping;
-  //     texture.wrapT = THREE.RepeatWrapping;
-
-  // };
-
-  // var loader = new THREE.TextureLoader();
-
-  // loader.load( 'tri_pattern.jpg', onLoad );
-
-  // effectFXAA = new ShaderPass( FXAAShader );
-  // effectFXAA.uniforms[ 'resolution' ].value.set( 1 / window.innerWidth, 1 / window.innerHeight );
-  // composer.addPass( effectFXAA );           
+  return await Promise.all([
+      loadA1(),
+      loadA2(),
+      loadA3(),
+      loadA4(),
+      loadB1(),
+      loadB2(),
+      loadB3(),
+      loadB4(),
+      loadC(),
+      loadD()
+    ])
+  .then(function(values){
+      scene.add(A1)
+      scene.add(A2)
+      scene.add(A3)
+      scene.add(A4)
+      scene.add(B1)
+      scene.add(B2)
+      scene.add(B3)
+      scene.add(B4)
+      scene.add(C)
+      scene.add(D)
+  })
+ 
+    
 }
 function render(){
   renderer.autoClear = false 
-  renderer.clear()
+//   renderer.clear()
   camera.layers.set(0)
-  // composer.render()
   renderer.render(scene,camera);
   renderer.shadowMapEnabled = true;
-  // console.log('out',outlinePass.selectedObjects)
-  // outlinePass.selectedObjects = [gy]
-  // 
   window.requestAnimationFrame(render);
-
 }
+
+async function initPosition(posObj){
+    await threeStart()
+    await changePosition(posObj)
+}
+async function changePosition(posObj){
+    curPos.value = posObj;
+    btnDisable.value = false;
+    await sleep(300);
+    for(let i=0;i<posObj.pos.length;i++){
+        let chess;
+        if(CHESS_LIST[i] == 'A1'){
+            chess = A1
+        }else if(CHESS_LIST[i] == 'A2'){
+            chess = A2
+        }else if(CHESS_LIST[i] == 'A3'){
+            chess = A3
+        }else if(CHESS_LIST[i] == 'A4'){
+            chess = A4
+        }else if(CHESS_LIST[i] == 'B1'){
+            chess = B1
+        }else if(CHESS_LIST[i] == 'B2'){
+            chess = B2
+        }else if(CHESS_LIST[i] == 'B3'){
+            chess = B3
+        }else if(CHESS_LIST[i] == 'B4'){
+            chess = B4
+        }else if(CHESS_LIST[i] == 'C'){
+            chess = C
+        }else if(CHESS_LIST[i] == 'D'){
+            chess = D
+        }
+        if(chess.timer1){
+            clearInterval(chess.timer1)
+        }
+        
+        let y = (posObj.pos[i]%4)*55 + chess.width/2-110;
+        let x= (Math.floor(posObj.pos[i]/4))*55 + chess.height/2-135.5
+        
+        chess.x = x 
+        chess.y = y
+        chess.position.x = x
+        chess.position.y = y
+    }
+}
+async function play(){
+    let posObj = curPos.value;
+    stepCount.value = 0;
+    var t1 = new Date().getTime()
+    btnDisable.value = true;
+    // let playIndex = curPage;
+    // initPosition()
+    var stepList = []
+    if(posObj.step && posObj.step != '[]'){
+        stepList = (posObj.step).replace('[(','').replace(')]','').split('), (')
+    }
+    var chess;
+    var t2 = new Date().getTime()
+    stepTime.value = t2-t1
+    for(let i=0;i<stepList.length;i++){
+        if(!btnDisable.value){
+            console.log('returns')
+            // stepCount.value = 0;
+            return;
+        }
+        let temp = stepList[i].split(', ')
+        if(CHESS_LIST[temp[0]] == 'A1'){
+            chess = A1
+        }else if(CHESS_LIST[temp[0]] == 'A2'){
+            chess = A2
+        }else if(CHESS_LIST[temp[0]] == 'A3'){
+            chess = A3
+        }else if(CHESS_LIST[temp[0]] == 'A4'){
+            chess = A4
+        }else if(CHESS_LIST[temp[0]] == 'B1'){
+            chess = B1
+        }else if(CHESS_LIST[temp[0]] == 'B2'){
+            chess = B2
+        }else if(CHESS_LIST[temp[0]] == 'B3'){
+            chess = B3
+        }else if(CHESS_LIST[temp[0]] == 'B4'){
+            chess = B4
+        }else if(CHESS_LIST[temp[0]] == 'C'){
+            chess = C
+        }else if(CHESS_LIST[temp[0]] == 'D'){
+            chess = D
+        }
+        chess.position.x = chess.x
+        chess.position.y = chess.y
+        let action = temp[1];
+        if(action == '0'){//up
+            let target = (chess.x - 55)
+            animate(chess,'x',target)
+            await sleep(300);
+            chess.x = target
+
+        }else if(action == '1'){//right
+            let target  = (chess.y+55)
+            animate(chess,'y',target)
+            await sleep(300);
+            chess.y = target
+
+        }else if(action == '2'){//down
+            let target = (chess.x + 55)
+            animate(chess,'x',target)
+            await sleep(300);
+            chess.x = target
+        }else if(action == '3'){//y
+            let target = (chess.y - 55)
+            animate(chess,'y',target)
+            await sleep(300);
+            chess.y = target
+        }
+
+        
+        stepCount.value = i+1;
+    }
+
+    ElMessage({
+        message:"成功",
+        type:"success"
+    })
+}
+function animate(element,direction,target){
+    clearInterval(element.timer1);
+    element.timer1=setInterval(function(){//element是一个对象，对象点出来的属性有且只有一个，避免多次点击按钮产生多个定时器
+        var current=parseInt(element.position[direction]);    //获取当前位置，数字类型，没有px。
+        //不可以用element.style.left，因为该写法只能获取到行内样式，不能获取到<style></style>标签内的样式
+        var step=5;//每次移动的距离
+        step=current<target?step:-step;//step的正负表示了向左或是向右移动
+        current+=step;    //计算移动到的位置，数字类型，没有px                
+        if(Math.abs(target-current)>Math.abs(step)){//当离目标位置的距离大于一步移动的距离
+            element.position[direction]=current;//移动
+        
+        }else{//当间距小于一步的距离，则清理定时器，把元素直接拿到目标位置
+            clearInterval(element.timer1);
+            element.position[direction]=target;
+            
+        }
+    },10);
+}
+function sleep(time){
+    return new Promise((resolve)=> setTimeout(resolve,time))
+}
+defineExpose({
+   initPosition,
+   changePosition,
+   play,
+})
 </script>
 
 <style>
 #canvas-frame{
     outline: none;
-    background: black;
-    /* background-image: linear-gradient(#ddd2cc, #a5b1a5); */
-    /* background-image: linear-gradient(#005792, #005792); */
+    background: white;
 }
 </style> 
