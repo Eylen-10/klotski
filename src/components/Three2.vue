@@ -33,7 +33,7 @@ window.requestAnimFrame = (function(){
             window.setTimeout(callback, 6000 / 60);
         };
 })();
-const gui = new dat.GUI();
+// const gui = new dat.GUI();
 var composer;
 var outlinePass;
 var effectFXAA;
