@@ -537,7 +537,7 @@ function initLight(){
   // add spotlight for the shadows
   // var spotLight = new THREE.SpotLight(0x475353);
   var spotLight = new THREE.SpotLight(0xffffff);
-  spotLight.position.set(200, 150, -500);
+  spotLight.position.set(400,300, -500);
   spotLight.castShadow = true;
   // gui.add(spotLight.position,'x')
   // gui.add(spotLight.position,'y')
