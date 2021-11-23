@@ -638,7 +638,7 @@ async function loadA3(){
         } );
         object.castShadow = true;
         object.receiveShadow = true;
-        object.scale.set(0.005,0.005,0.005);
+        object.scale.set(0.007,0.007,0.007);
         // object.postion.z = 1;
 
         var geometry = new THREE.BoxGeometry(105,50,2);
