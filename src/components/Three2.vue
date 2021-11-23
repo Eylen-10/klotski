@@ -512,11 +512,11 @@ function initThree(){
 var camera; // 设置正方向和中心点
 var controller;//视角控制器
 function initCamera(){
-  camera = new THREE.PerspectiveCamera(50,width/height,0.1,1000);
+  camera = new THREE.PerspectiveCamera(60,width/height,0.1,1000);
 //   console.log(width/height)
   // camera.position.set(230,170,130);
   // camera.position.set(0,-170,130);
-  camera.position.set(290,200,250);
+  camera.position.set(350,0,200);
 
   camera.up.set(0,0,1); 
   camera.lookAt(origPoint)
