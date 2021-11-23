@@ -572,8 +572,8 @@ async function loadA1(){
             A1 = new THREE.Group();
             A1.add(object)
             A1.add(mesh)
-            A1.position.x = -82.5;
-            A1.position.y = -110;
+            A1.position.x = -83;
+            A1.position.y = -85;
             A1.position.z = 0;
             A1.width = 50
             A1.height = 105
@@ -609,8 +609,8 @@ async function loadA2(){
         A2 = new THREE.Group();
         A2.add(object)
         A2.add(mesh)
-        A2.position.x = -82.5 ;
-        A2.position.y = -110  + 55 + 55 + 55;
+        A2.position.x = -83;
+        A2.position.y = 80;
         A2.position.z = 0;
         A2.width = 50
         A2.height = 105
@@ -648,8 +648,8 @@ async function loadA3(){
         A3 = new THREE.Group();
         A3.add(object)
         A3.add(mesh)
-        A3.position.x = -82.5 + 110 ;
-        A3.position.y = -110;
+        A3.position.x =27;
+        A3.position.y = -85;
         A3.position.z = 0 ;
         A3.width = 50;
         A3.height = 105;
@@ -685,8 +685,8 @@ async function loadA4(){
         A4 = new THREE.Group();
         A4.add(object)
         A4.add(mesh)
-        A4.position.x = -82.5 + 110;
-        A4.position.y = -110  + 55 + 55 + 55;
+        A4.position.x = 27;
+        A4.position.y = 80;
         A4.position.z = 0;
         A4.width = 50;
         A4.height = 105;
@@ -723,8 +723,8 @@ async function loadB1(){
         B1 = new THREE.Group();
         B1.add(object)
         B1.add(mesh)
-        B1.position.x = -82.5 + 110 +82.5;
-        B1.position.y = -110  + 55 + 55 + 55 ;
+        B1.position.x = -0.5;
+        B1.position.y = -30 ;
         B1.position.z = 0;
         B1.width = 50;
         B1.height = 50;
@@ -760,8 +760,8 @@ async function loadB2(){
         B2 = new THREE.Group();
         B2.add(object)
         B2.add(mesh)
-        B2.position.x = -82.5 +82.5 + 55;
-        B2.position.y = -110  + 55 + 55  ;
+        B2.position.x = 54.5;
+        B2.position.y = -30  ;
         B2.position.z = 0;
         B2.width = 50;
         B2.height = 50;
@@ -797,8 +797,8 @@ async function loadB3(){
         B3 = new THREE.Group();
         B3.add(object)
         B3.add(mesh)
-        B3.position.x = -82.5 +82.5 + 55;
-        B3.position.y = -110  + 55  ;
+        B3.position.x = 109.5;
+        B3.position.y = -85;
         B3.position.z = 0;
         B3.width = 50;
         B3.height = 50;
@@ -835,8 +835,8 @@ async function loadB4(){
         B4 = new THREE.Group();
         B4.add(object)
         B4.add(mesh)
-        B4.position.x = -82.5 +82.5 + 55 + 55;
-        B4.position.y = -110 ;
+        B4.position.x = 109.5;
+        B4.position.y = -30;
         B4.position.z = 0;
         B4.width = 50;
         B4.height = 50;
@@ -873,8 +873,8 @@ async function loadD(){
           D = new THREE.Group();
           D.add(object)
           D.add(mesh)
-          D.position.x = -82.5 ;
-          D.position.y = -110 +82.5;
+          D.position.x = -83;
+          D.position.y = -2.5;
           D.position.z = 0;
           D.width = 105;
           D.height = 105;
@@ -912,8 +912,8 @@ async function loadC(){
         C = new THREE.Group();
         C.add(object)
         C.add(mesh)
-        C.position.x = -110 + 55 + 55;
-        C.position.y = -110+82.5;
+        C.position.x = 109.5;
+        C.position.y = 52.5;
         C.position.z = 0;
         C.width = 105;
         C.height = 50;
@@ -1011,7 +1011,7 @@ async function changePosition(posObj){
         
         let y = (posObj.pos[i]%4)*55 + chess.width/2-110;
         let x= (Math.floor(posObj.pos[i]/4))*55 + chess.height/2-135.5
-        
+        console.log(CHESS_LIST[i],'x',x,'y',y)
         chess.x = x 
         chess.y = y
         chess.position.x = x
