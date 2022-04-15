@@ -1,6 +1,6 @@
 <template>
  <div  id="canvas-frame"></div>
- <div class="f1" v-if="curPos">
+ <div class="" v-if="curPos">
     <el-button size="mini" type="primary" :disabled="btnDisable" class="play" @click="play">play</el-button>
 </div> 
  <div class="count"><span v-show="btnDisable">TIME:&nbsp;&nbsp;{{ stepTime }}ms &nbsp;&nbsp;&nbsp;COUNT:&nbsp;&nbsp;{{ stepCount }}</span></div>
@@ -516,7 +516,7 @@ function initCamera(){
 //   console.log(width/height)
   // camera.position.set(230,170,130);
   // camera.position.set(0,-170,130);
-  camera.position.set(350,0,200);
+  camera.position.set(200,0,100);
 
   camera.up.set(0,0,1); 
   camera.lookAt(origPoint)
@@ -933,7 +933,7 @@ async function initObject(){
           var mesh = new THREE.Mesh( geometry2, material );
           mesh.receiveShadow = true;
           mesh.position.x = i*55 - 110;
-          mesh.position.y = j*55 - 110;
+          mesh.position.y = j*55 - 85;
           mesh.position.z = 0;
           scene.add( mesh );
         }
@@ -1127,6 +1127,6 @@ defineExpose({
 <style>
 #canvas-frame{
     outline: none;
-    background: white;
+    /* background: white; */
 }
 </style> 

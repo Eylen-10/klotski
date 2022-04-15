@@ -56,7 +56,7 @@ function getPosition(){
 }
 </script>
 <style>
-.content{
+/* .content{
     width:100%;
     height:100%;
     display:flex;
@@ -66,19 +66,78 @@ function getPosition(){
     width:100%;
     flex:1;
 }
-.pagination{
-    height:30px;
-    margin:10px;
-}
-.count{
-    font-size:12px;
-    line-height:30px;
-    height:30px;
-}
+
+
 .header{
     font-size:20px;
     height:20px;
     margin:10px;
     font-weight:bold;
+} */
+.count{
+    font-size:12px;
+    line-height:30px;
+    height:30px;
+}
+.content{
+    /* width:100%;
+    height:100%; */
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top: 5vh;
+}
+.pagination{
+    height:30px;
+    margin:20px;
+}
+.header{
+    font-size:32px;
+    height:20px;
+    margin:50px;
+    line-height: 40px;
+    letter-spacing: 10px;
+    font-weight:bold;
+     text-shadow:
+    /* White glow */
+    0 0 7px #999,
+    0 0 10px #999,
+    0 0 21px #999,
+    /* Green glow */
+    0 0 42px #EFFFFD,
+    0 0 82px #EFFFFD,
+    0 0 92px #EFFFFD,
+    0 0 102px #EFFFFD,
+    0 0 151px #EFFFFD;
+}
+.main{
+    width:800px;
+    height:420px;
+    margin-bottom: 20px;
+    /* padding:10px 10px 30px 10px; */
+    /* background: rgba(255, 255, 255, 0.1); */
+    /* position:relative; */
+    /* border:1px solid white; */
+}
+.el-button{
+    margin-top:20px !important;
+    background: transparent !important;
+    border: 1px solid white !important;
+    border-radius: 5px !important;
+    overflow: hidden;
+}
+.el-button:hover{
+    background-color: rgba(255,255,255,0.2) !important; 
+}
+.el-button--primary.is-disabled{
+    color:#999 !important;
+    border-color:#999 !important;
+}
+.el-pagination .btn-prev,.el-pagination .number,.el-pagination .more,.el-pagination .btn-next{
+    background: rgba(255,255,255,0.1) !important;
+}
+.el-pagination .btn-prev:hover,.el-pagination .number:hover,.el-pagination .more:hover,.el-pagination .btn-next:hover{
+    color:rgba(255,255,255,1) !important;
+    background: rgba(255,255,255,0.5) !important;
 }
 </style>

@@ -232,7 +232,7 @@ function initPosition(){
             <div class="item D" ref="D" key="D">D</div>
         </transition-group>
         <div class="pagination">
-            <div class="f1">
+            <div class="">
                 <el-button size="mini" type="primary" :disabled="btnDisable" class="play" @click="play">play</el-button>
             </div> 
             <div class="count"><span v-show="btnDisable">TIME:&nbsp;&nbsp;{{ stepTime }}ms &nbsp;&nbsp;&nbsp;COUNT:&nbsp;&nbsp;{{ stepCount }}</span></div>
@@ -251,24 +251,39 @@ function initPosition(){
 </template>
 <style>
 .content{
-    width:100%;
-    height:100%;
+    /* width:100%;
+    height:100%; */
     display:flex;
     flex-direction:column;
     align-items:center;
+    padding-top: 5vh;
 }
 .header{
-    font-size:20px;
+    font-size:32px;
     height:20px;
-    margin:10px;
+    margin:50px;
+    line-height: 40px;
+    letter-spacing: 10px;
     font-weight:bold;
+     text-shadow:
+    /* White glow */
+    0 0 7px #999,
+    0 0 10px #999,
+    0 0 21px #999,
+    /* Green glow */
+    0 0 42px #EFFFFD,
+    0 0 82px #EFFFFD,
+    0 0 92px #EFFFFD,
+    0 0 102px #EFFFFD,
+    0 0 151px #EFFFFD;
 }
 .main{
     width:400px;
     height:500px;
     margin:10px;
-    background:#ccc;
+    background: rgba(255, 255, 255, 0.1);
     position:relative;
+    border:1px solid white;
 }
 .pagination{
     height:30px;
@@ -290,11 +305,29 @@ function initPosition(){
 }
 .el-button{
     margin-top:10px !important;
+    background: transparent !important;
+    border: 1px solid white !important;
+    border-radius: 5px !important;
+    overflow: hidden;
+}
+.el-button:hover{
+    background-color: rgba(255,255,255,0.2) !important; 
+}
+.el-button--primary.is-disabled{
+    color:#999 !important;
+    border-color:#999 !important;
+}
+.el-pagination .btn-prev,.el-pagination .number,.el-pagination .more,.el-pagination .btn-next{
+    background: rgba(255,255,255,0.1) !important;
+}
+.el-pagination .btn-prev:hover,.el-pagination .number:hover,.el-pagination .more:hover,.el-pagination .btn-next:hover{
+    color:rgba(255,255,255,1) !important;
+    background: rgba(255,255,255,0.5) !important;
 }
 .item{
     position:absolute;
-    border:1px solid white;
-    color:white;
+    border:1px solid #EFFFFD;
+    color:#EFFFFD;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -312,22 +345,22 @@ function initPosition(){
 .A{
     width:100px;
     height:200px;
-    background:#26BAEE;
+    
 }
 .B{
     width:100px;
     height:100px;
-    background:#9FE8FA;
+    /* background:#9FE8FA; */
 }
 .C{
     width:200px;
     height:100px;
-    background:#B2EBF2;
+    /* background:#B2EBF2; */
 }
 .D{
     width:200px;
     height:200px;
-    background:#07689F;
+    /* background:#07689F; */
 }
 .A1{
     top:0;
