@@ -23,7 +23,7 @@
 import Klotski from './Three2.vue'
 import { onMounted,ref } from 'vue'
 import  axios  from 'axios';
-
+import { txt } from '../consts/index'
 onMounted(() => {
   getPosition()
 })
@@ -41,26 +41,18 @@ function handleCurrentChange(val){
     }
 }
 function getPosition(){
-    isLoading.value = true;
-    axios.get('steps.txt').then(res=>{
-        if(res.status==200){
-            let lines = res.data.split('\n')
-            for(let i=0;i<lines.length;i++){
-                let temp = lines[i].split(':')
-                posList.push({
-                    pos:temp[0].split(','),
-                    step : temp[1],
-                })
-            }
-            // posObj = posList[curPage];
-            totalNum.value = lines.length-1;
-            posObj.value = posList[curPage]
-            klot.value.initPosition(posList[curPage]);
-        }
-        isLoading.value = false;
-    }).catch(e=>{
-        isLoading.value = false;
-    })
+    let lines = txt.split('\n')
+    for(let i=0;i<lines.length;i++){
+        let temp = lines[i].split(':')
+        posList.push({
+            pos:temp[0].split(','),
+            step : temp[1],
+        })
+    }
+    // posObj = posList[curPage];
+    totalNum.value = lines.length-1;
+    posObj.value = posList[curPage]
+    klot.value.initPosition(posList[curPage]);
 }
 </script>
 <style>

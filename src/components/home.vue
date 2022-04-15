@@ -3,6 +3,7 @@
 import { ref,onMounted,nextTick } from "vue";
 import  axios  from 'axios';
 import { ElMessage } from 'element-plus'
+import { txt } from '../consts/index'
 onMounted(() => {
   // 初始化
   getPosition();
@@ -179,25 +180,16 @@ function handleCurrentChange(val){
     
 }
 function getPosition(){
-    isLoading.value = true;
-    axios.get('steps.txt').then(res=>{
-        if(res.status==200){
-            let lines = res.data.split('\n')
-            for(let i=0;i<lines.length;i++){
-                let temp = lines[i].split(':')
-                posList.push({
-                    pos:temp[0].split(','),
-                    step : temp[1],
-                })
-            }
-            posObj = posList[curPage];
-            totalNum.value = lines.length-1;
-            initPosition();
-        }
-        isLoading.value = false;
-    }).catch(e=>{
-        isLoading.value = false;
-    })
+    let lines = txt.split('\n');
+    for(let i=0;i<lines.length;i++){
+        let temp = lines[i].split(':')
+        posList.push({
+            pos:temp[0].split(','),
+            step : temp[1],
+        })
+    }
+    posObj = posList[curPage];
+    totalNum.value = lines.length-1;
 }
 function initPosition(){
     isLoading.value = true;
