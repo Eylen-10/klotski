@@ -104,11 +104,11 @@ function getPosition(){
     0 0 10px #999,
     0 0 21px #999,
     /* Green glow */
-    0 0 42px #EFFFFD,
-    0 0 82px #EFFFFD,
-    0 0 92px #EFFFFD,
-    0 0 102px #EFFFFD,
-    0 0 151px #EFFFFD;
+    0 0 42px #c0cdcb,
+    0 0 82px #c0cdcb,
+    0 0 92px #c0cdcb,
+    0 0 102px #c0cdcb,
+    0 0 151px #c0cdcb;
 }
 .main{
     width:800px;

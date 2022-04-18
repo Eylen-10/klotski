@@ -253,17 +253,19 @@ function initPosition(){
 .content{
     /* width:100%;
     height:100%; */
-    display:flex;
+    background: #101b24;
+    /* display:flex;
     flex-direction:column;
-    align-items:center;
-    padding-top: 5vh;
+    align-items:center; */
+    /* padding-top: 5vh; */
+    /* overflow: hidden; */
 }
 .header{
     font-size:32px;
-    height:20px;
-    margin:50px;
-    line-height: 40px;
+    height:50px;
+    line-height: 50px;
     letter-spacing: 10px;
+    padding:20px;
     font-weight:bold;
      text-shadow:
     /* White glow */
@@ -271,11 +273,11 @@ function initPosition(){
     0 0 10px #999,
     0 0 21px #999,
     /* Green glow */
-    0 0 42px #EFFFFD,
-    0 0 82px #EFFFFD,
-    0 0 92px #EFFFFD,
-    0 0 102px #EFFFFD,
-    0 0 151px #EFFFFD;
+    0 0 42px #c0cdcb,
+    0 0 82px #c0cdcb,
+    0 0 92px #c0cdcb,
+    0 0 102px #c0cdcb,
+    0 0 151px #c0cdcb;
 }
 .main{
     width:400px;
@@ -284,9 +286,10 @@ function initPosition(){
     background: rgba(255, 255, 255, 0.1);
     position:relative;
     border:1px solid white;
+    margin:0 auto;
 }
 .pagination{
-    height:30px;
+    height:150px;
     
 }
 .pag{
